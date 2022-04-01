@@ -17,3 +17,13 @@ app.get('/api/', (req, res) =>{
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
 })
+
+/*
+const start= Date.now();
+
+console.log('${start}-${randomIntFromInterval(100000,999999)}');
+
+function randomIntFromInterval(min, max){
+  return Math.floor(Math.random()*(max-min+1)+min)
+}
+*/
