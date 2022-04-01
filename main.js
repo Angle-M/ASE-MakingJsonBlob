@@ -33,3 +33,13 @@ function randomIntFromInterval(min, max){
   return Math.floor(Math.random()*(max-min+1)+min)
 }
 */
+
+/*
+1. Setup HTTP verbs
+
+2. Create and retrieve unique IDs (Req. Params)
+
+3. Read request body  with Body Parser
+
+4. Write and Read Files
+*/
