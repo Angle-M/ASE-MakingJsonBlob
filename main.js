@@ -2,15 +2,21 @@ const express = require('express')
 const app = express()
 const port = 3000
 
-app.get('/api/', (req, res) =>{
+app.get('/api/jsonBlob/<blobID>', (req, res) =>{
+  console.log(req.params);
+  
   res.send('Root')
 })
 
-app.get('/api/', (req, res) =>{
+app.post('/api/jsonBlob', (req, res) =>{
   res.send('About')
 })
 
-app.get('/api/', (req, res) =>{
+app.put('/api/jsonBlob/<blobID>', (req, res) =>{
+  res.send('About')
+})
+
+app.delete('/api/jsonBlob/<blobID>', (req, res) =>{
   res.send('Contact us')
 })
 
