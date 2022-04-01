@@ -6,7 +6,7 @@ const port = 3000
 
 app.get('/api/jsonBlob/<blobID>', (req, res) =>{
   console.log(req.params);
-  app.read();
+  app.use(bodyParser.json());
   res.send('Got a GET request')
 })
 
