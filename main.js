@@ -1,19 +1,22 @@
-const express = require('express')
-const app = express()
+/*
+ID, Folders and extensions need to be setup and make a function to create a folder if we want to make it automatic 
+
+*/
+const express = require('express');
+const app = express();
+const bodyParser = require('body-parser');
+app.use(bodyParser.urlencoded({ extended: false
+}))
+app.use(express.json());
+const fs = require('fs');
 const port = 3000
 
-const uuid = require('uuid')
-
-const fs = require('fs')
-const bodyParser = require('body-parser')
-
-const folder = './data'
-const extension = '.json'
 
 const logger = {
 	info: (content) => { console.log('\x1b[42m%s\x1b[0m', 'INFO', content) },
 	error: (content) => { console.log('\x1b[41m%s\x1b[0m', 'ERROR', content) }
 }
+
 
 app.use(express.json({
 	verify: (req, res, buf, encoding) => {
@@ -24,7 +27,7 @@ app.use(express.json({
 			logger.error(`Cannot parse the given body: ${buf}`)
 		}
 	}
-}))
+}));
 
 app.use(bodyParser.json())
 
@@ -58,9 +61,8 @@ app.get('/api/:id', (req, res) => {
 app.put('/api/:id', (req, res) => {
 	const id = req.params.id
 	const path = `${folder}/${id}${extension}`
-	/*
-	req.body is accepted as text or json?
-	*/
+
+	// TODO: req.body is accepted as text or json?
 	const body = req.body
 
 	let json = {}
@@ -92,10 +94,8 @@ app.delete('/api/:id', (req, res) => {
 		return
 	}
 
-	/*
-	reset content means make the existing json file an empty JSON object 
-	or delete it directly from the folder
-	*/
+	// TODO: reset content means make the existing json file an empty JSON object 
+	// or delete it directly from the folder
 	fs.writeFile(path, '{}', 'utf8', () => {
 		logger.info(`Delete content: ${path}`)
 	})
@@ -104,8 +104,5 @@ app.delete('/api/:id', (req, res) => {
 })
 
 app.listen(port, () => {
-	if(!fs.existsSync(folder)) {
-		fs.mkdirSync(folder)
-	}
-	logger.info(`App is listening on port ${port}`)
+  console.log(`Example app listening on port ${port}`)
 })
