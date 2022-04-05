@@ -58,8 +58,9 @@ app.get('/api/:id', (req, res) => {
 app.put('/api/:id', (req, res) => {
 	const id = req.params.id
 	const path = `${folder}/${id}${extension}`
-
-	// TODO: req.body is accepted as text or json?
+	/*
+	req.body is accepted as text or json?
+	*/
 	const body = req.body
 
 	let json = {}
@@ -91,8 +92,10 @@ app.delete('/api/:id', (req, res) => {
 		return
 	}
 
-	// TODO: reset content means make the existing json file an empty JSON object 
-	// or delete it directly from the folder
+	/*
+	reset content means make the existing json file an empty JSON object 
+	or delete it directly from the folder
+	*/
 	fs.writeFile(path, '{}', 'utf8', () => {
 		logger.info(`Delete content: ${path}`)
 	})
