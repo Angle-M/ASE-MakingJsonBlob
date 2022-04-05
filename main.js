@@ -1,135 +1,108 @@
-const express = require('express');
-const app = express();
-const bodyParser = require('body-parser');
-const fs = require('fs');
+const express = require('express')
+const app = express()
 const port = 3000
 
-//retrieve a JSON document from a file
-//Needs to be formatted
-app.get('/api/jsonBlob/<blobID>', (req, res) =>{
-  var fs = require('fs');
+const uuid = require('uuid')
 
-function readJSONFile(filename, callback) {
-  fs.readFile(filename, function (err, data) {
-    if(err) {
-      callback(err);
-      return;
-    }
-    try {
-      callback(null, JSON.parse(data));
-    } catch(exception) {
-      callback(exception);
-    }
-  });
-}
-  
-//create a new JSON document and save it into a file having a unique id, return the id
-app.post('/api/jsonBlob', (req, res) =>{
-  var iterator = 0; // this is going to be your identifier
+const fs = require('fs')
+const bodyParser = require('body-parser')
 
-function addIdentifier(target){
-  target.id = iterator;
-  iterator++;
+const folder = './data'
+const extension = '.json'
+
+const logger = {
+	info: (content) => { console.log('\x1b[42m%s\x1b[0m', 'INFO', content) },
+	error: (content) => { console.log('\x1b[41m%s\x1b[0m', 'ERROR', content) }
 }
 
-function loop(obj){
+app.use(express.json({
+	verify: (req, res, buf, encoding) => {
+		try {
+			JSON.parse(buf)
+		} catch (error) {
+			res.status(406).send('Cannot parse the given body.')
+			logger.error(`Cannot parse the given body: ${buf}`)
+		}
+	}
+}))
 
-  for(var i in obj){
+app.use(bodyParser.json())
 
-    var c = obj[i];        
+app.post('/api', (req, res) => {
+	const body = req.body
+	const id = uuid.v4()
+	const path = `${folder}/${id}${extension}`
 
-    if(typeof c === 'object'){
+	fs.writeFile(path, JSON.stringify(body), 'utf8', () => {
+		logger.info(`New file created: ${path}`)
+	})
 
-      if(c.length === undefined){
-
-        //c is not an array
-        addIdentifier(c);
-
-      }
-
-      loop(c);
-
-    }
-
-  }
-
-}
-
-loop(json); // json is your input object
-  app.write();
-  res.send('Got a POST request')
+	res.send(`ID: ${id}`)
 })
 
-
-//update the content of a JSON document with new content and store it into the same file
-//Needs to be configured  
-app.put('/api/jsonBlob/<blobID>', (req, res) =>{
-  const fs = require('fs');
-const fileName = './file.json';
-const file = require(fileName);
-    
-file.key = "new value";
-    
-fs.writeFile(fileName, JSON.stringify(file), function writeJSON(err) {
-  if (err) return console.log(err);
-  console.log(JSON.stringify(file));
-  console.log('writing to ' + fileName);
-  res.send('Got a PUT request')
-});
-
-
-//reset the content of the JSON document
-app.delete('/api/jsonBlob/<blobID>', (req, res) =>{
-  app.write();
-  res.send('Got a DELETE request')
+app.get('/api/:id', (req, res) => {
+	const id = req.params.id
+	const path = `${folder}/${id}${extension}`
+	let json = {}
+	try {
+		json = JSON.parse(fs.readFileSync(path, 'utf8'))
+	} catch {
+		res.status(404).send('The requested file does not exist!')
+		logger.error(`File with ID ${id} does not exist`)
+		return
+	}
+	res.send(json)
+	logger.info(`File with ID ${id} found`)
 })
 
+app.put('/api/:id', (req, res) => {
+	const id = req.params.id
+	const path = `${folder}/${id}${extension}`
 
+	// TODO: req.body is accepted as text or json?
+	const body = req.body
+
+	let json = {}
+	try {
+		json = JSON.parse(fs.readFileSync(path, 'utf8'))
+	} catch {
+		res.status(404).send('The requested file does not exist!')
+		logger.error(`File with ID ${id} does not exist`)
+		return
+	}
+
+	fs.writeFile(path, JSON.stringify(body), 'utf8', () => {
+		logger.info(`New content updated: ${path}`)
+	})
+
+	res.send('New content updated successfully!')
+})
+
+app.delete('/api/:id', (req, res) => {
+	const id = req.params.id
+	const path = `${folder}/${id}${extension}`
+
+	let json = {}
+	try {
+		json = JSON.parse(fs.readFileSync(path, 'utf8'))
+	} catch {
+		res.status(404).send('The requested file does not exist!')
+		logger.error(`File with ID ${id} does not exist`)
+		return
+	}
+
+	// TODO: reset content means make the existing json file an empty JSON object 
+	// or delete it directly from the folder
+	fs.writeFile(path, '{}', 'utf8', () => {
+		logger.info(`Delete content: ${path}`)
+	})
+
+	res.send('Content deleted successfully!')
+})
 
 app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`)
+	if(!fs.existsSync(folder)) {
+		fs.mkdirSync(folder)
+	}
+	logger.info(`App is listening on port ${port}`)
 })
-
-function newFunction() {
-  parse; application / x - www - form - urlencoded
-}
-
-
-
-
-
-
-
-
-
-/*
-parse application/x-www-form-urlencoded
-app.use(bodyParser.urlencoded({ extended: false }))
-parse application/json
-app.use(bodyParser.json())
-app.use(function (req, res) {
-res.setHeader('Content-Type', 'application/json')
-console.log(req.body.test);
-res.write(req.body.test+'\n');
-res.end(JSON.stringify(req.body, null, 2))
-})
-*/
-/*
-const start= Date.now();
-
-console.log('${start}-${randomIntFromInterval(100000,999999)}');
-
-function randomIntFromInterval(min, max){
-  return Math.floor(Math.random()*(max-min+1)+min)
-}
-*/
-
-/*
-1. Setup HTTP verb 
-
-2. Create and retrieve unique IDs (Req. Params)
-
-3. Read request body  with Body Parser
-
-4. Write and Read Files
-*/
