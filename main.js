@@ -33,7 +33,10 @@ app.use(bodyParser.json())
 
 app.post('/api', (req, res) => {
 	const body = req.body
-	const id = uuid.v4()
+	//Generate Unique Identifier based on date
+	let originalUUID = Date.now().toString();
+    const id = originalUUID.split('').sort(function(){return 0.5-Math.random()}).join('');
+	// const id = uuid.v4()
 	const path = `${folder}/${id}${extension}`
 
 	fs.writeFile(path, JSON.stringify(body), 'utf8', () => {
