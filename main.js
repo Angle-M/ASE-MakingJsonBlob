@@ -36,6 +36,7 @@ app.post('/api', (req, res) => {
 	//Generate Unique Identifier based on date
 	let originalUUID = Date.now().toString();
     const id = originalUUID.split('').sort(function(){return 0.5-Math.random()}).join('');
+	//const id = originalUUID.
 	// const id = uuid.v4()
 	const path = `${folder}/${id}${extension}`
 
@@ -45,9 +46,9 @@ app.post('/api', (req, res) => {
 	
 	fs.writeFile(path, JSON.stringify(body), 'utf8', () => {
 		logger.info(`New file created: ${path}`)
+	+	res.send(`ID: ${id}`)
 	})
 
-	res.send(`ID: ${id}`)
 })
 
 app.get('/api/:id', (req, res) => {
