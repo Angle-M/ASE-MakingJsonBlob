@@ -9,7 +9,10 @@ app.use(bodyParser.urlencoded({ extended: false
 }))
 app.use(express.json());
 const fs = require('fs');
+const folder = "./data";
+const extension = ".json"
 const port = 3000
+
 
 
 const logger = {
@@ -43,12 +46,14 @@ app.post('/api', (req, res) => {
 	if(!fs.existsSync(folder)) {
 		fs.mkdirSync(folder)
 	}
-	
+
 	fs.writeFile(path, JSON.stringify(body), 'utf8', () => {
 		logger.info(`New file created: ${path}`)
-	+	res.send(`ID: ${id}`)
+		res.send(`ID: ${id}`)
 	})
 
+	res.set('Location', `${id}`)
+	res.json(body)
 })
 
 app.get('/api/:id', (req, res) => {
