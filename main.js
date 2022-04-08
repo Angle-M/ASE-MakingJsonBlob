@@ -39,9 +39,7 @@ app.post('/api', (req, res) => {
 	const body = req.body
 	//Generate Unique Identifier based on date
 	let originalUUID = Date.now().toString();
-    const id = originalUUID.split('').sort(function(){return 0.5-Math.random()}).join('');
-	//const id = originalUUID.
-	// const id = uuid.v4()
+    const id = originalUUID + Math.floor(Math.random() * (99999 - 10000) + 10000);;
 	const path = `${folder}/${id}${extension}`
 
 	if(!fs.existsSync(folder)) {
@@ -50,7 +48,7 @@ app.post('/api', (req, res) => {
 
 	fs.writeFile(path, JSON.stringify(body), 'utf8', () => {
 		logger.info(`New file created: ${path}`)
-		res.set('Location', `/api/${id}`)
+		res.set('Location', `http://localhost:3000/api/${id}`)
 		res.json(body)
 	})	
 })

@@ -6,15 +6,15 @@ Content-Type: application/json
     "your JSON object goes here": "your JSON object goes here"
 }
 ###
-GET http://localhost:3000/api/5484196045987
+GET http://localhost:3000/api/164945740870323250
 
 ###
-PUT http://localhost:3000/api/5484196045987
+PUT http://localhost:3000/api/164945740870323250
 Content-Type: application/json
 
 {
-    "your JSON object goes here": "PUTT Testing"
+    "your JSON object goes here": "Jumba BUns"
 }
 
 ###
-DELETE http://localhost:3000/api/9861384634652
+DELETE http://localhost:3000/api/164945740870323250
