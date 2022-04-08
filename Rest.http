@@ -1,0 +1,22 @@
+@hostAPI = http://localhost:3000/api
+
+GET {{hostAPI}}/file_id_goes_here
+
+###
+POST  {{hostAPI}}
+Content-Type: application/json
+
+{
+    "your JSON object goes here": "your JSON object goes here"
+}
+
+###
+PUT {{hostAPI}}/file_id_goes_here
+
+Content-Type: application/json
+{
+    "your JSON object goes here": "your JSON object goes here"
+}
+
+###
+DELETE {{hostAPI}}/file_id_goes_here

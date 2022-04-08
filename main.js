@@ -2,6 +2,7 @@
 ID, Folders and extensions need to be setup and make a function to create a folder if we want to make it automatic 
 
 */
+
 const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
@@ -49,11 +50,9 @@ app.post('/api', (req, res) => {
 
 	fs.writeFile(path, JSON.stringify(body), 'utf8', () => {
 		logger.info(`New file created: ${path}`)
-		res.send(`ID: ${id}`)
-	})
-
-	res.set('Location', `${id}`)
-	res.json(body)
+		res.set('Location', `/api/${id}`)
+		res.json(body)
+	})	
 })
 
 app.get('/api/:id', (req, res) => {
@@ -67,7 +66,7 @@ app.get('/api/:id', (req, res) => {
 		logger.error(`File with ID ${id} does not exist`)
 		return
 	}
-	res.send(json)
+	res.json(json)
 	logger.info(`File with ID ${id} found`)
 })
 
@@ -76,22 +75,14 @@ app.put('/api/:id', (req, res) => {
 	const path = `${folder}/${id}${extension}`
 
 	// TODO: req.body is accepted as text or json?
-	const body = req.body
-
-	let json = {}
-	try {
-		json = JSON.parse(fs.readFileSync(path, 'utf8'))
-	} catch {
-		res.status(404).send('The requested file does not exist!')
-		logger.error(`File with ID ${id} does not exist`)
-		return
-	}
-
-	fs.writeFile(path, JSON.stringify(body), 'utf8', () => {
+	if(!fs.existsSync(path)){
+		res.status(404).send();
+		logger.error(`File with ID ${id} does not exist`);
+	}else {
+		fs.writeFileSync(path, JSON.stringify(req.body));
 		logger.info(`New content updated: ${path}`)
-	})
-
-	res.send('New content updated successfully!')
+		res.json(req.body);
+	}
 })
 
 app.delete('/api/:id', (req, res) => {
@@ -109,9 +100,19 @@ app.delete('/api/:id', (req, res) => {
 
 	// TODO: reset content means make the existing json file an empty JSON object 
 	// or delete it directly from the folder
-	fs.writeFile(path, '{}', 'utf8', () => {
-		logger.info(`Delete content: ${path}`)
-	})
+	 
+		fs.unlink( `./data/${id}.json`, (err) => {
+			if(err) {
+				throw err;
+			}
+		})
+		console.log('Successfully Deleted /api/'+`${id}`);
+	
+	
+
+	// fs.writeFile(path, '{}', 'utf8', () => {
+	// 	logger.info(`Delete content: ${path}`)
+	// })
 
 	res.send('Content deleted successfully!')
 })
