@@ -39,6 +39,10 @@ app.post('/api', (req, res) => {
 	// const id = uuid.v4()
 	const path = `${folder}/${id}${extension}`
 
+	if(!fs.existsSync(folder)) {
+		fs.mkdirSync(folder)
+	}
+	
 	fs.writeFile(path, JSON.stringify(body), 'utf8', () => {
 		logger.info(`New file created: ${path}`)
 	})
